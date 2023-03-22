@@ -4,7 +4,9 @@ import random
 def main():
     deck = create_deck()
     shuffle_deck(deck)
+    dealers_hole_cards = [draw_card(deck), draw_card(deck)]
     player_hand(deck)
+    dealer_hand(deck, dealers_hole_cards)
 
 
 def create_deck():
@@ -19,7 +21,7 @@ def create_deck():
             if card.isdigit():
                 deck.append([card, suit, int(card)])
             elif card == "Ace":
-                deck.append([card, suit, 1, 11])
+                deck.append([card, suit, 1])
             else:
                 deck.append([card, suit, 10])
     return deck
@@ -28,28 +30,52 @@ def create_deck():
 def player_hand(deck):
     cards = [draw_card(deck), draw_card(deck)]
     points = cards[0][2] + cards[1][2]
+    print_cards(cards)
     while points < 22:
-        print_cards(cards)
         hit_or_stand = input("\nhit/stand: ")
         if hit_or_stand.lower() == "stand":
             return points
         elif hit_or_stand.lower() == "hit":
             card = draw_card(deck)
             cards.append(card)
+            print_cards(cards)
             if card[0] == 'Ace' and points < 11:
-                while True:
-                    try:
-                        one_or_eleven = int(input("Do you want the ace to be 1? or 11 (1/11):"))
-                        if one_or_eleven == 1 or one_or_eleven == 11:
-                            points += one_or_eleven
-                    except ValueError:
-                        print("Not a valid input")
+                points += is_ace()
             else:
                 points += card[2]
         else:
             print("invalid input")
-    print("Bust")
+    print("\nBust\n")
     return points
+
+
+def dealer_hand(deck, dealt):
+    cards = dealt
+    points = cards[0][2] + cards[1][2]
+    print_cards(cards)
+    while points < 18:
+        card = draw_card(deck)
+        cards.append(card)
+        print(f"{card[0]} of {card[1]}")
+        if card[0] == 'Ace' and points < 11:
+            points += 11
+        else:
+            points += card[2]
+        if points > 21:
+            print("Dealer busts")
+            return points
+    print(f"Dealer has {points} points")
+    return points
+
+
+def is_ace():
+    while True:
+        try:
+            one_or_eleven = int(input("Do you want the ace to be 1? or 11 (1/11):"))
+            if one_or_eleven == 1 or one_or_eleven == 11:
+                return one_or_eleven
+        except ValueError:
+            print("Not a valid input")
 
 
 def print_cards(cards):
