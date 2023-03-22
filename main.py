@@ -1,6 +1,8 @@
+import random
+
+
 def main():
     pass
-
 
 def create_deck():
     # Could have just created them all by hand, but I try to stick
@@ -21,9 +23,17 @@ def create_deck():
 
 
 def print_deck(deck):
-    deck = create_deck()
     for i in deck:
         print(i)
+
+
+def draw_card(deck):
+    card = deck.pop(0)
+    return card
+
+
+def shuffle_deck(deck):
+    random.shuffle(deck)
 
 
 if __name__ == '__main__':
