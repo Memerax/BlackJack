@@ -2,7 +2,9 @@ import random
 
 
 def main():
-    pass
+    deck = create_deck()
+    shuffle_deck(deck)
+    player_hand(deck)
 
 
 def create_deck():
@@ -23,9 +25,36 @@ def create_deck():
     return deck
 
 
-def print_deck(deck):
-    for i in deck:
-        print(i)
+def player_hand(deck):
+    cards = [draw_card(deck), draw_card(deck)]
+    points = cards[0][2] + cards[1][2]
+    while points < 22:
+        print_cards(cards)
+        hit_or_stand = input("\nhit/stand: ")
+        if hit_or_stand.lower() == "stand":
+            return points
+        elif hit_or_stand.lower() == "hit":
+            card = draw_card(deck)
+            cards.append(card)
+            if card[0] == 'Ace' and points < 11:
+                while True:
+                    try:
+                        one_or_eleven = int(input("Do you want the ace to be 1? or 11 (1/11):"))
+                        if one_or_eleven == 1 or one_or_eleven == 11:
+                            points += one_or_eleven
+                    except ValueError:
+                        print("Not a valid input")
+            else:
+                points += card[2]
+        else:
+            print("invalid input")
+    print("Bust")
+    return points
+
+
+def print_cards(cards):
+    for i in cards:
+        print(f"{i[0]} of {i[1]}")
 
 
 def draw_card(deck):
