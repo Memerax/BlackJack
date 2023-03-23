@@ -2,11 +2,16 @@ import random
 
 
 def main():
-    deck = create_deck()
-    shuffle_deck(deck)
-    dealers_hole_cards = [draw_card(deck), draw_card(deck)]
-    player_hand(deck)
-    dealer_hand(deck, dealers_hole_cards)
+    print("BLACKJACK!")
+    print("Blackjack payout is 3:2\n")
+    while True:
+
+        deck = create_deck()
+        shuffle_deck(deck)
+        bet_data()
+        dealers_hole_cards = [draw_card(deck), draw_card(deck)]
+        player_hand(deck)
+        dealer_hand(deck, dealers_hole_cards)
 
 
 def create_deck():
@@ -30,6 +35,7 @@ def create_deck():
 def player_hand(deck):
     cards = [draw_card(deck), draw_card(deck)]
     points = cards[0][2] + cards[1][2]
+    print("\nYOUR CARDS:")
     print_cards(cards)
     while points < 22:
         hit_or_stand = input("\nhit/stand: ")
@@ -90,6 +96,12 @@ def draw_card(deck):
 
 def shuffle_deck(deck):
     random.shuffle(deck)
+
+def bet_data():
+    with open("money.txt") as file:
+        money = file.read()
+    print(f"Money: {money}")
+    bet = input("Bet amount: ")
 
 
 if __name__ == '__main__':
