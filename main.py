@@ -1,6 +1,8 @@
 import random
 import time
 
+import db
+
 
 def main():
     print("BLACKJACK!")
@@ -114,12 +116,14 @@ def shuffle_deck(deck):
 
 
 def bet_data():
-    with open("money.txt") as file:
-        money = file.read()
-    print(f"Money: {money}")
-    bet = input("Bet amount: ")
-
-
+    money = db.read_money_from_file()
+    print(money)
+    while True:
+        bet = input("Bet amount: ")
+        if bet > money:
+            print('Sorry not enough money')
+        else:
+            return bet
 def determine_winner(player_points, dealer_points):
     print(f"\nYOUR POINTS:  {player_points}")
     print(f"DEALERS POINTS   {dealer_points}\n")
