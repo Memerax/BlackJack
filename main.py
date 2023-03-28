@@ -6,7 +6,7 @@ import db
 
 def main():
     print("BLACKJACK!")
-    print("Blackjack payout is 3:2\n")
+    print("Blackjack payout is 3:2")
     again = 'y'
     deal_hole_cards = True
     while again.lower() != 'n':
@@ -20,20 +20,21 @@ def main():
         if deal_hole_cards:
             # if the player already busted, don't deal new hole cards
             dealers_hole_cards = [draw_card(deck), draw_card(deck)]
-        #Show hole card
+        # Show hole card
         print("\nDEALERS SHOW CARD")
         print(f"{dealers_hole_cards[0][0]} of {dealers_hole_cards[0][1]}")
         # Deal player cards and get points
         player_points = player_hand(deck)
-        if player_points > 21:
+        if player_points < 22:
+            # play the dealers hand
+            dealer_points = dealer_hand(deck, dealers_hole_cards)
+            # determine the winner
+            determine_winner(player_points, dealer_points)
+            # deal new hole cards next round
+            deal_hole_cards = True
+        else:
+            determine_winner(player_points,0)
             deal_hole_cards = False
-            continue
-        # play the dealers hand
-        dealer_points = dealer_hand(deck, dealers_hole_cards)
-        # determine the winner
-        determine_winner(player_points, dealer_points)
-        # deal new hole cards next round
-        deal_hole_cards = True
         again = input("Play again? (y/n): ")
 
 
@@ -129,7 +130,7 @@ def shuffle_deck(deck):
 
 def bet_data():
     money = db.read_money_from_file()
-    print(money)
+    print(f"\nMoney: {money}")
     while True:
         bet = int(input("Bet amount: "))
         if bet > money:
@@ -141,7 +142,7 @@ def bet_data():
 def determine_winner(player_points, dealer_points):
     print(f"\nYOUR POINTS:  {player_points}")
     print(f"DEALERS POINTS   {dealer_points}\n")
-    if dealer_points < player_points < 22:
+    if dealer_points < player_points < 22 or dealer_points > 21:
         print("Congrats you win.")
     elif player_points <= dealer_points < 22:
         print("Sorry. You lose.")
