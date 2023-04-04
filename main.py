@@ -42,8 +42,6 @@ def main():
 
 
 def create_deck():
-    # Could have just created them all by hand, but I try to stick
-    # to the do not repeat yourself concept where possible
     cards = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9",
              "10", "Jack", "Queen", "King"]
     suits = ["Hearts", "Diamonds", "Spades", "Clubs"]
@@ -138,13 +136,15 @@ def bet_data():
         bet = int(input("Bet amount: "))
         if bet > money:
             print('Sorry not enough money')
+        elif bet <= 0:
+            print('Bet must be greater than zero')
         else:
             return bet, money
 
 
 def payout(bet, money, player_cards, winner, points):
     if winner == 'player':
-        if len(player_cards) == 2 and points == 2:
+        if len(player_cards) == 2 and points == 21:
             money += (bet * 1.5)
         else:
             money += bet
@@ -156,6 +156,7 @@ def payout(bet, money, player_cards, winner, points):
 def determine_winner(player_points, dealer_points):
     print(f"\nYOUR POINTS:  {player_points}")
     print(f"DEALERS POINTS   {dealer_points}\n")
+    winner = ''
     if dealer_points < player_points < 22 or dealer_points > 21:
         winner = 'player'
         print("Congrats you win.")
