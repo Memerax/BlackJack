@@ -1,6 +1,5 @@
 import random
 import time
-
 import db
 
 
@@ -10,29 +9,18 @@ def main():
     again = 'y'
     deal_hole_cards = True
     while again.lower() != 'n':
-        # create Deck
         deck = create_deck()
-        # shuffle deck
         shuffle_deck(deck)
-        # get bet data
         bet, money = bet_data()
-        # get dealers hole cards
         if deal_hole_cards:
-            # if the player already busted, don't deal new hole cards
             dealers_hole_cards = [draw_card(deck), draw_card(deck)]
-        # Show hole card
         print("\nDEALERS SHOW CARD")
         print(f"{dealers_hole_cards[0][0]} of {dealers_hole_cards[0][1]}")
-        # Deal player cards and get points
         player_points, player_cards = player_hand(deck)
         if player_points < 22:
-            # play the dealers hand
-            dealer_points = dealer_hand(deck, dealers_hole_cards)
-            # determine the winner
+            dealer_points = dealer_hand(deck, dealers_hole_cards,player_points)
             winner = determine_winner(player_points, dealer_points)
-            # determine payout
             payout(bet, money, player_cards, winner, player_points)
-            # deal new hole cards next round
             deal_hole_cards = True
         else:
             winner = determine_winner(player_points, 0)
@@ -79,11 +67,11 @@ def player_hand(deck):
     return points, cards
 
 
-def dealer_hand(deck, dealt):
+def dealer_hand(deck, dealt,player_points):
     cards = dealt
     points = cards[0][2] + cards[1][2]
     print_cards(cards, "Dealer")
-    while points < 18:
+    while points < 18 and points < player_points:
         time.sleep(1)
         card = draw_card(deck)
         cards.append(card)
