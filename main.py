@@ -134,8 +134,10 @@ def payout(bet, money, player_cards, winner, points):
     if winner == 'player':
         if len(player_cards) == 2 and points == 21:
             money += (bet * 1.5)
+            print(f"Money: {money}")
         else:
             money += bet
+            print(f"Money: {money}")
     else:
         money -= bet
     db.write_money_to_file(money)
