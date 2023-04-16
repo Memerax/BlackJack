@@ -2,7 +2,7 @@
 def read_money_from_file():
     try:
         with open("money.txt", 'r') as file:
-            money = int(file.read())
+            money = float(file.read())
     except FileNotFoundError:
         print("File not found")
     return money

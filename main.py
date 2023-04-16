@@ -8,6 +8,7 @@ def main():
     print("BLACKJACK!")
     print("Blackjack payout is 3:2")
     again = 'y'
+    # flag to deal new hole cards to the dealer , or keep them if he busts.
     deal_hole_cards = True
     while again.lower() != 'n':
         deck = create_deck()
@@ -25,11 +26,14 @@ def main():
             payout(bet, money, player_cards, winner, player_points)
             deal_hole_cards = True
         else:
-            winner = determine_winner(player_points, 0)
+            print(f"\nDealer cards were:\n"
+                  f"{dealers_hole_cards[0][0]} of {dealers_hole_cards[0][1]}\n"
+                  f"{dealers_hole_cards[1][0]} of {dealers_hole_cards[1][1]}")
+            winner = determine_winner(player_points, dealers_hole_cards[0][2]+dealers_hole_cards[1][2])
             payout(bet, money, player_cards, winner, player_points)
             deal_hole_cards = False
         again = input("Play again? (y/n): ")
-
+    print("\nCome back soon!\nBye!")
 
 def create_deck():
     cards = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9",
@@ -49,8 +53,16 @@ def create_deck():
 
 def player_hand(deck):
     cards = [draw_card(deck), draw_card(deck)]
-    points = cards[0][2] + cards[1][2]
     print_cards(cards, "player")
+    if cards[0][0] == "Ace":
+        points = is_ace()
+    else:
+        points = cards[0][2]
+    if cards[1][0] == 'Ace':
+        points += is_ace()
+    else:
+        points += cards[1][2]
+
     while points < 22:
         hit_or_stand = input("\nhit/stand: ")
         if hit_or_stand.lower() == "stand":
@@ -59,13 +71,15 @@ def player_hand(deck):
             card = draw_card(deck)
             cards.append(card)
             print_cards(cards, "player")
+            # only allow an ace to be an 11 if it won't
+            # bust the players hand
             if card[0] == 'Ace' and points < 11:
                 points += is_ace()
             else:
                 points += card[2]
         else:
             print("invalid input")
-    print("\nBust\n")
+    print("\nBust")
     return points, cards
 
 
@@ -120,11 +134,11 @@ def shuffle_deck(deck):
 
 
 def bet_data():
-    money = int(db.read_money_from_file())
+    money = float(round(db.read_money_from_file(),2))
     print(f"\nMoney: {money}")
     while True:
         try:
-            bet = int(input("Bet amount: "))
+            bet = float(input("Bet amount: "))
             if bet > money:
                 print('Sorry not enough money')
             elif 5 > bet > 0:
@@ -144,19 +158,20 @@ def bet_data():
 def payout(bet, money, player_cards, winner, points):
     if winner == 'player':
         if len(player_cards) == 2 and points == 21:
-            money += (bet * 1.5)
-            print(f"Money: {money}")
+            money += round((bet * 1.5),2)
+            print(f"Money: {round(money,2)}\n")
         else:
-            money += bet
-            print(f"Money: {money}")
+            money += round(bet,2)
+            print(f"Money: {round(money,2)}\n")
     else:
-        money -= bet
+        money -= round(bet,2)
+        print(f"Money: {round(money,2)}\n")
     db.write_money_to_file(money)
 
 
 def determine_winner(player_points, dealer_points):
-    print(f"\nYOUR POINTS:  {player_points}")
-    print(f"DEALERS POINTS   {dealer_points}\n")
+    print(f"\nYOUR POINTS:    {player_points}")
+    print(f"DEALERS POINTS: {dealer_points}\n")
     winner = ''
     if dealer_points < player_points < 22 or dealer_points > 21:
         winner = 'player'
