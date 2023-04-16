@@ -1,4 +1,5 @@
 import random
+import sys
 import time
 import db
 
@@ -11,6 +12,7 @@ def main():
     while again.lower() != 'n':
         deck = create_deck()
         shuffle_deck(deck)
+        buy_new_chips()
         bet, money = bet_data()
         if deal_hole_cards:
             dealers_hole_cards = [draw_card(deck), draw_card(deck)]
@@ -71,7 +73,7 @@ def dealer_hand(deck, dealt,player_points):
     cards = dealt
     points = cards[0][2] + cards[1][2]
     print_cards(cards, "Dealer")
-    while points < 18 and points < player_points:
+    while points < 18:
         time.sleep(1)
         card = draw_card(deck)
         cards.append(card)
@@ -121,13 +123,22 @@ def bet_data():
     money = int(db.read_money_from_file())
     print(f"\nMoney: {money}")
     while True:
-        bet = int(input("Bet amount: "))
-        if bet > money:
-            print('Sorry not enough money')
-        elif bet <= 0:
-            print('Bet must be greater than zero')
-        else:
-            return bet, money
+        try:
+            bet = int(input("Bet amount: "))
+            if bet > money:
+                print('Sorry not enough money')
+            elif 5 > bet > 0:
+                print("Minimum bet is 5 Dollars")
+            elif bet <= 0:
+                print('Bet must be greater than zero')
+            elif bet > 1000:
+                print("Max bet is 1000 Dollars")
+            else:
+                return bet, money
+        except ValueError:
+            print("Not a valid integer")
+
+
 
 
 def payout(bet, money, player_cards, winner, points):
@@ -154,6 +165,18 @@ def determine_winner(player_points, dealer_points):
         winner = 'dealer'
         print("Sorry. You lose.")
     return winner
+
+def buy_new_chips():
+    money = db.read_money_from_file()
+    if money < 5:
+        print(f"You only have {money} dollars remaining")
+        choice = input("Buy more chips? (y/n): ")
+        if choice.lower() == 'y':
+            money = money + 100
+            db.write_money_to_file(money)
+        elif choice.lower() == "n":
+            print("You do not have enough money to continue playing")
+            sys.exit()
 
 
 if __name__ == '__main__':
